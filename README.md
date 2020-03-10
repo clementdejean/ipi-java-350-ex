@@ -55,7 +55,7 @@ Créer la classe de test et les méthodes permettant de tester la méthode `emba
 
 Créer la classe de test et les méthodes permettant de tester la méthode `findLastMatricule` de `EmployeRepository`.
 
-### Tests de service intégrés
+### Tests de com.ipiecoles.java.java350.service intégrés
 
 Tester de façon intégrée un cas nominal de la méthode `embaucheEmploye` de la classe `EmployeService`.
 
