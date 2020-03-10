@@ -2,21 +2,32 @@ package repository;
 
 import com.ipiecoles.java.java350.model.Employe;
 import com.ipiecoles.java.java350.repository.EmployeRepository;
+import org.aspectj.lang.annotation.Before;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
 
-
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class EmployeRepositoryTest {
+
     @Autowired
     EmployeRepository employeRepository;
 
+    @BeforeEach
+    public void setup(){
+        employeRepository.deleteAll();
+    }
+
     @Test
-    public void testFindLastMatricule0Employe(){
+    public void testFindLastMatriculeZ() {
         //Given
 
         //When
@@ -25,11 +36,12 @@ public class EmployeRepositoryTest {
         //Then
         Assertions.assertThat(lastMatricule).isNull();
     }
+
     @Test
-    public void testFindLastMatricule2Employe(){
+    public void testFindLastMatriculeA() {
         //Given
-        Employe employe1 = employeRepository.save (new Employe("Doe","John","M12345", LocalDate.now(),1500d,1,1.0));
-        Employe employe2 = employeRepository.save (new Employe("Doe","Jane","T01234", LocalDate.now(),1500d,1,1.0));
+        Employe employe1 = new Employe("doe","Jhon","M12345", LocalDate.now(),1500d,1,1.0);
+        Employe employe2 = new Employe("doe","Jhon","M66666", LocalDate.now(),1500d,1,1.0);
 
         //When
         String lastMatricule = employeRepository.findLastMatricule();
@@ -38,4 +50,3 @@ public class EmployeRepositoryTest {
         Assertions.assertThat(lastMatricule).isEqualTo("12345");
     }
 }
-
