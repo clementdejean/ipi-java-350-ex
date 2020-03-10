@@ -15,7 +15,7 @@ import javax.persistence.EntityExistsException;
 import java.time.LocalDate;
 
 @Service
-public class EmployeService {
+public class  EmployeService {
 
     @Autowired
     private EmployeRepository employeRepository;
