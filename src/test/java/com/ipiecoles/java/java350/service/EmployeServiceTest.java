@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -141,4 +142,21 @@ public class EmployeServiceTest {
         EmployeException e = Assertions.assertThrows(EmployeException.class, () -> employeService.embaucheEmploye(nom, prenom, poste, niveauEtude, tempsPartiel));
         Assertions.assertEquals("Limite des 100000 matricules atteinte !", e.getMessage());
     }
+    /*
+    @Test
+    public void calculPerformanceCommercialNull(){
+        //Given
+    	String matricule = "C12345";
+    	
+        Employe employe = new Employe();
+        Mockito.when(employeRepository.findByMatricule(matricule)).thenReturn(employe);
+        Mockito.when(employeRepository.save(Mockito.any(Employe.class))).then();
+        //When addProprietaire(idVehicule, idProprietaire)
+        employeRepository.(matricule, null, 1000l);
+        //Then
+        ArgumentCaptor<Employe> employeCaptor = ArgumentCaptor.forClass(Vehicule.class);
+        Mockito.verify(employeRepository, Mockito.times(1)).save(employeCaptor.capture());
+        Assertions.assertThat(employeCaptor.getValue().getProprietaireId()).isEqualTo(2L);
+    }
+    */
 }
