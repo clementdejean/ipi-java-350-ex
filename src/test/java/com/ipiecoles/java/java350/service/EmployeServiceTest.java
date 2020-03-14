@@ -145,24 +145,215 @@ public class EmployeServiceTest {
     }
     */
     
-    //--------------------------------------Cas 1-------------------------------------------------------
+    //Le chiffre d'affaire traité ne peut être null !
     @Test
-    public void calculPerformanceCommercialInférieur20pourc() throws EmployeException{
+    public void testCalculPerformanceCommercialCaTraiteNull() {
+    		
+    	String matricule = "C12345";
+    	Long caTraite = null;
+    	Long objectifCa = 1000l;
+    	
+        try {
+        	
+        	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
+        	when(employeRepository.avgPerformanceWhereMatriculeStartsWith("C")).thenReturn(1.0);
+        	
+        } catch (Exception e) {
+            Assertions.assertThat(e.getMessage());
+            Assertions.assertThat(e.getClass());
+        }
+    }
+    
+    //Le chiffre d'affaire traité ne peut être négatif !
+    @Test
+    public void testCalculPerformanceCommercialCaTraiteNeg() {
+    		
+    	String matricule = "C12345";
+    	Long caTraite = 0l;
+    	Long objectifCa = 1000l;
+    	
+        try {
+        	
+        	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
+        	when(employeRepository.avgPerformanceWhereMatriculeStartsWith("C")).thenReturn(1.0);
+        	
+        } catch (Exception e) {
+            Assertions.assertThat(e.getMessage());
+            Assertions.assertThat(e.getClass());
+        }
+    }
+    
+    //L'objectif de chiffre d'affaire ne peut être null !
+    @Test
+    public void testCalculPerformanceCommercialObjectifCaNull() {
+    		
+    	String matricule = "C12345";
+    	Long caTraite = 900l;
+    	Long objectifCa = null;
+    	
+        try {
+        	
+        	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
+        	when(employeRepository.avgPerformanceWhereMatriculeStartsWith("C")).thenReturn(1.0);
+        	
+        } catch (Exception e) {
+            Assertions.assertThat(e.getMessage());
+            Assertions.assertThat(e.getClass());
+        }
+    }
+    
+    // L'objectif de chiffre d'affaire ne peut être négatif !
+    @Test
+    public void testCalculPerformanceCommercialObjectifCaNeg() {
+    		
+    	String matricule = "C12345";
+    	Long caTraite = 900l;
+    	Long objectifCa = 0l;
+    	
+        try {
+        	
+        	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
+        	when(employeRepository.avgPerformanceWhereMatriculeStartsWith("C")).thenReturn(1.0);
+        	
+        } catch (Exception e) {
+            Assertions.assertThat(e.getMessage());
+            Assertions.assertThat(e.getClass());
+        }
+    }
+    //Le matricule ne peut être null !
+    @Test
+    public void testCalculPerformanceCommercialMatriculeNull() {
+    		
+    	String matricule = null;
+    	Long caTraite = 900l;
+    	Long objectifCa = 900l;
+    	
+        try {
+        	
+        	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
+        	when(employeRepository.avgPerformanceWhereMatriculeStartsWith("C")).thenReturn(1.0);
+        	
+        } catch (Exception e) {
+            Assertions.assertThat(e.getMessage());
+            Assertions.assertThat(e.getClass());
+        }
+    }
+    
+    //Le matricule doit commencer par un C !
+    @Test
+    public void testCalculPerformanceCommercialMatriculeStratC() {
+    	
+    	String matricule = "M00001";
+    	Long caTraite = 900l;
+    	Long objectifCa = 900l;
+    	
+        try {
+        	
+        	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
+        	when(employeRepository.avgPerformanceWhereMatriculeStartsWith("C")).thenReturn(1.0);
+        	
+        } catch (Exception e) {
+            Assertions.assertThat(e.getMessage());
+            Assertions.assertThat(e.getClass());
+        }
+    }
+    
+    //null !matricule.startsWith("C")
+    
+    //1 : Si le chiffre d'affaire est inférieur de plus de 20% à l'objectif fixé, le commercial retombe à la performance de base
+    @Test
+    public void testCalculPerformanceCommercialInférieur20pourc() throws EmployeException{
         //Given
     	String matricule = "C12345";
     	Long caTraite = 700l;
     	Long objectifCa = 1000l;
     	
-        Employe employe = new Employe("test","test","C12345",LocalDate.now(),1000D,1,1.0);
+        Employe employe = new Employe("Doe","John","C12345",LocalDate.now(),1000D,1,1.0);
         Mockito.when(employeRepository.findByMatricule(matricule)).thenReturn(employe);
         Mockito.when(employeRepository.avgPerformanceWhereMatriculeStartsWith("C")).thenReturn(1.0);
         
-        //When addProprietaire(idVehicule, idProprietaire)
+        //When
         employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
         //Then
         ArgumentCaptor<Employe> employeCaptor = ArgumentCaptor.forClass(Employe.class);
         Mockito.verify(employeRepository, Mockito.times(1)).save(employeCaptor.capture());
         Assertions.assertThat(employeCaptor.getValue().getPerformance()).isEqualTo(Entreprise.PERFORMANCE_BASE);
+    }
+      
+    
+    //2 : Si le chiffre d'affaire est inférieur entre 20% et 5% par rapport à l'ojectif fixé, il perd 2 de performance (dans la limite de la performance de base)
+    
+    @Test
+    public void testCalculPerformanceCommercialBetween20and5() {
+    	
+    	String matricule = "C12345";
+    	Long caTraite = 850l;
+    	Long objectifCa = 1000l;
+    	
+        try {
+        	
+        	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
+        	when(employeRepository.avgPerformanceWhereMatriculeStartsWith("C")).thenReturn(1.0);
+        	
+        } catch (Exception e) {
+            Assertions.assertThat(e.getMessage());
+            Assertions.assertThat(e.getClass());
+        }
+    }
+    
+    //3 : Si le chiffre d'affaire est entre -5% et +5% de l'objectif fixé, la performance reste la même.
+    @Test
+    public void testCalculPerformanceCommercialBetween5and5() {
+    	
+    	String matricule = "C12345";
+    	Long caTraite = 100l;
+    	Long objectifCa = 100l;
+    	
+        try {
+        	
+        	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
+        	when(employeRepository.avgPerformanceWhereMatriculeStartsWith("C")).thenReturn(1.0);
+        	
+        } catch (Exception e) {
+            Assertions.assertThat(e.getMessage());
+            Assertions.assertThat(e.getClass());
+        }
+    }
+    //4 : Si le chiffre d'affaire est supérieur entre 5 et 20%, il gagne 1 de performance
+    @Test
+    public void testCalculPerformanceCommercialBetween5and20Perf() {
+    	
+    	String matricule = "C12345";
+    	Long caTraite = 140l;
+    	Long objectifCa = 100l;
+    	
+        try {
+        	
+        	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
+        	when(employeRepository.avgPerformanceWhereMatriculeStartsWith("C")).thenReturn(1.0);
+        	
+        } catch (Exception e) {
+            Assertions.assertThat(e.getMessage());
+            Assertions.assertThat(e.getClass());
+        }
+    }
+    //5 : Si le chiffre d'affaire est supérieur de plus de 20%, il gagne 4 de performance
+    @Test
+    public void testCalculPerformanceCommercialBMore20() {
+    	
+    	String matricule = "C12345";
+    	Long caTraite = 1500l;
+    	Long objectifCa = 1000l;   	
+    	
+        try {
+        	
+        	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
+        	when(employeRepository.avgPerformanceWhereMatriculeStartsWith("C")).thenReturn(1.0);
+        	
+        } catch (Exception e) {
+            Assertions.assertThat(e.getMessage());
+            Assertions.assertThat(e.getClass());
+        }
     }
     
 }
