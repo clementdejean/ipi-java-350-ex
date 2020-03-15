@@ -42,36 +42,34 @@ public class EmployeServiceTest {
     }
     
     //Le chiffre d'affaire traité ne peut être null !
+
     @Test
-    public void testCalculPerformanceCommercialCaTraiteNull() {
-    		
-    	String matricule = "C12345";
-    	Long caTraite = null;
-    	Long objectifCa = 1000l;
-    	
-    	 try {     	
-           	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
-           	Employe employe = employeRepository.findByMatricule(matricule);
-           	Assertions.assertThat(employe.getPerformance()).isEqualTo(1); 	
-           } catch (EmployeException e) {
-           }
-    }
+	public void testCalculPerformanceCommercialCaTraiteNull() throws EmployeException {
+		//When
+		try {
+			employeService.calculPerformanceCommercial("C12345", null, 100L);
+			Assertions.fail("Faux");
+		} catch (Exception e) {
+		//Then
+			Assertions.assertThat(e).isInstanceOf(EmployeException.class);
+			Assertions.assertThat(e.getMessage()).isEqualTo("Le chiffre d'affaire traité ne peut être négatif ou null !");
+		}
+
+	}
     
     //Le chiffre d'affaire traité ne peut être négatif !
     @Test
-    public void testCalculPerformanceCommercialCaTraiteNeg() {
-    		
-    	String matricule = "C12345";
-    	Long caTraite = 0l;
-    	Long objectifCa = 1000l;
-    	
-    	 try {     	
-           	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
-           	Employe employe = employeRepository.findByMatricule(matricule);
-           	Assertions.assertThat(employe.getPerformance()).isEqualTo(1); 	
-           } catch (EmployeException e) {
-           }
-    }
+    public void testCalculPerformanceCommercialCaTraiteNeg() throws EmployeException {
+    	//When
+		try {
+			employeService.calculPerformanceCommercial("C12345", -50L, 100L);
+			Assertions.fail("Faux");
+		} catch (Exception e) {
+		//Then
+			Assertions.assertThat(e).isInstanceOf(EmployeException.class);
+			Assertions.assertThat(e.getMessage()).isEqualTo("Le chiffre d'affaire traité ne peut être négatif ou null !");
+		}
+	}
     
     //L'objectif de chiffre d'affaire ne peut être null !
     @Test
@@ -216,5 +214,7 @@ public class EmployeServiceTest {
            } catch (EmployeException e) {
            }
     }
+
+	
     
 }
