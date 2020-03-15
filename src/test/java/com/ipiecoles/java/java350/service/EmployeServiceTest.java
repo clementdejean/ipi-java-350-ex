@@ -16,6 +16,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.persistence.EntityExistsException;
 import java.time.LocalDate;
@@ -25,125 +27,19 @@ import java.util.Arrays;
 
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 public class EmployeServiceTest {
 
-    @InjectMocks
-    EmployeService employeService;
+    @Autowired
+    public EmployeRepository employeRepository;
 
-    @Mock
-    EmployeRepository employeRepository;
+    @Autowired
+    public EmployeService employeService;
 
     @BeforeEach
-    public void setup(){
-        MockitoAnnotations.initMocks(this.getClass());
+    public void remiseAZero() {
+     employeRepository.deleteAll();
     }
-/*
-    @Test
-    public void testEmbaucheEmployeTechnicienPleinTempsBts() throws EmployeException {
-        //Given
-        String nom = "Doe";
-        String prenom = "John";
-        Poste poste = Poste.TECHNICIEN;
-        NiveauEtude niveauEtude = NiveauEtude.BTS_IUT;
-        Double tempsPartiel = 1.0;
-        when(employeRepository.findLastMatricule()).thenReturn("00345");
-        when(employeRepository.findByMatricule("T00346")).thenReturn(null);
-
-        //When
-        employeService.embaucheEmploye(nom, prenom, poste, niveauEtude, tempsPartiel);
-
-        //Then
-        ArgumentCaptor<Employe> employeArgumentCaptor = ArgumentCaptor.forClass(Employe.class);
-        verify(employeRepository, times(1)).save(employeArgumentCaptor.capture());
-        Assertions.assertEquals(nom, employeArgumentCaptor.getValue().getNom());
-        Assertions.assertEquals(prenom, employeArgumentCaptor.getValue().getPrenom());
-        Assertions.assertEquals(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")), employeArgumentCaptor.getValue().getDateEmbauche().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
-        Assertions.assertEquals("T00346", employeArgumentCaptor.getValue().getMatricule());
-        Assertions.assertEquals(tempsPartiel, employeArgumentCaptor.getValue().getTempsPartiel());
-
-        //1521.22 * 1.2 * 1.0
-        Assertions.assertEquals(1825.46, employeArgumentCaptor.getValue().getSalaire().doubleValue());
-    }
-
-    @Test
-    public void testEmbaucheEmployeManagerMiTempsMaster() throws EmployeException {
-        //Given
-        String nom = "Doe";
-        String prenom = "John";
-        Poste poste = Poste.MANAGER;
-        NiveauEtude niveauEtude = NiveauEtude.MASTER;
-        Double tempsPartiel = 0.5;
-        when(employeRepository.findLastMatricule()).thenReturn("00345");
-        when(employeRepository.findByMatricule("M00346")).thenReturn(null);
-
-        //When
-        employeService.embaucheEmploye(nom, prenom, poste, niveauEtude, tempsPartiel);
-
-        //Then
-        ArgumentCaptor<Employe> employeArgumentCaptor = ArgumentCaptor.forClass(Employe.class);
-        verify(employeRepository, times(1)).save(employeArgumentCaptor.capture());
-        Assertions.assertEquals(nom, employeArgumentCaptor.getValue().getNom());
-        Assertions.assertEquals(prenom, employeArgumentCaptor.getValue().getPrenom());
-        Assertions.assertEquals(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")), employeArgumentCaptor.getValue().getDateEmbauche().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
-        Assertions.assertEquals("M00346", employeArgumentCaptor.getValue().getMatricule());
-        Assertions.assertEquals(tempsPartiel, employeArgumentCaptor.getValue().getTempsPartiel());
-
-        //1521.22 * 1.4 * 0.5
-        Assertions.assertEquals(1064.85, employeArgumentCaptor.getValue().getSalaire().doubleValue());
-    }
-
-    @Test
-    public void testEmbaucheEmployeManagerMiTempsMasterNoLastMatricule() throws EmployeException {
-        //Given
-        String nom = "Doe";
-        String prenom = "John";
-        Poste poste = Poste.MANAGER;
-        NiveauEtude niveauEtude = NiveauEtude.MASTER;
-        Double tempsPartiel = 0.5;
-        when(employeRepository.findLastMatricule()).thenReturn(null);
-        when(employeRepository.findByMatricule("M00001")).thenReturn(null);
-
-        //When
-        employeService.embaucheEmploye(nom, prenom, poste, niveauEtude, tempsPartiel);
-
-        //Then
-        ArgumentCaptor<Employe> employeArgumentCaptor = ArgumentCaptor.forClass(Employe.class);
-        verify(employeRepository, times(1)).save(employeArgumentCaptor.capture());
-        Assertions.assertEquals("M00001", employeArgumentCaptor.getValue().getMatricule());
-    }
-
-    @Test
-    public void testEmbaucheEmployeManagerMiTempsMasterExistingEmploye(){
-        //Given
-        String nom = "Doe";
-        String prenom = "John";
-        Poste poste = Poste.MANAGER;
-        NiveauEtude niveauEtude = NiveauEtude.MASTER;
-        Double tempsPartiel = 0.5;
-        when(employeRepository.findLastMatricule()).thenReturn(null);
-        when(employeRepository.findByMatricule("M00001")).thenReturn(new Employe());
-
-        //When/Then
-        EntityExistsException e = Assertions.assertThrows(EntityExistsException.class, () -> employeService.embaucheEmploye(nom, prenom, poste, niveauEtude, tempsPartiel));
-        Assertions.assertEquals("L'employé de matricule M00001 existe déjà en BDD", e.getMessage());
-    }
-
-    @Test
-    public void testEmbaucheEmployeManagerMiTempsMaster99999(){
-        //Given
-        String nom = "Doe";
-        String prenom = "John";
-        Poste poste = Poste.MANAGER;
-        NiveauEtude niveauEtude = NiveauEtude.MASTER;
-        Double tempsPartiel = 0.5;
-        when(employeRepository.findLastMatricule()).thenReturn("99999");
-
-        //When/Then
-        EmployeException e = Assertions.assertThrows(EmployeException.class, () -> employeService.embaucheEmploye(nom, prenom, poste, niveauEtude, tempsPartiel));
-        Assertions.assertEquals("Limite des 100000 matricules atteinte !", e.getMessage());
-    }
-    */
     
     //Le chiffre d'affaire traité ne peut être null !
     @Test
@@ -153,15 +49,12 @@ public class EmployeServiceTest {
     	Long caTraite = null;
     	Long objectifCa = 1000l;
     	
-        try {
-        	
-        	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
-        	when(employeRepository.avgPerformanceWhereMatriculeStartsWith("C")).thenReturn(1.0);
-        	
-        } catch (Exception e) {
-            Assertions.assertThat(e.getMessage());
-            Assertions.assertThat(e.getClass());
-        }
+    	 try {     	
+           	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
+           	Employe employe = employeRepository.findByMatricule(matricule);
+           	Assertions.assertThat(employe.getPerformance()).isEqualTo(1); 	
+           } catch (EmployeException e) {
+           }
     }
     
     //Le chiffre d'affaire traité ne peut être négatif !
@@ -172,15 +65,12 @@ public class EmployeServiceTest {
     	Long caTraite = 0l;
     	Long objectifCa = 1000l;
     	
-        try {
-        	
-        	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
-        	when(employeRepository.avgPerformanceWhereMatriculeStartsWith("C")).thenReturn(1.0);
-        	
-        } catch (Exception e) {
-            Assertions.assertThat(e.getMessage());
-            Assertions.assertThat(e.getClass());
-        }
+    	 try {     	
+           	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
+           	Employe employe = employeRepository.findByMatricule(matricule);
+           	Assertions.assertThat(employe.getPerformance()).isEqualTo(1); 	
+           } catch (EmployeException e) {
+           }
     }
     
     //L'objectif de chiffre d'affaire ne peut être null !
@@ -191,15 +81,12 @@ public class EmployeServiceTest {
     	Long caTraite = 900l;
     	Long objectifCa = null;
     	
-        try {
-        	
-        	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
-        	when(employeRepository.avgPerformanceWhereMatriculeStartsWith("C")).thenReturn(1.0);
-        	
-        } catch (Exception e) {
-            Assertions.assertThat(e.getMessage());
-            Assertions.assertThat(e.getClass());
-        }
+    	 try {     	
+           	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
+           	Employe employe = employeRepository.findByMatricule(matricule);
+           	Assertions.assertThat(employe.getPerformance()).isEqualTo(1); 	
+           } catch (EmployeException e) {
+           }
     }
     
     // L'objectif de chiffre d'affaire ne peut être négatif !
@@ -210,15 +97,12 @@ public class EmployeServiceTest {
     	Long caTraite = 900l;
     	Long objectifCa = 0l;
     	
-        try {
-        	
-        	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
-        	when(employeRepository.avgPerformanceWhereMatriculeStartsWith("C")).thenReturn(1.0);
-        	
-        } catch (Exception e) {
-            Assertions.assertThat(e.getMessage());
-            Assertions.assertThat(e.getClass());
-        }
+    	 try {     	
+           	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
+           	Employe employe = employeRepository.findByMatricule(matricule);
+           	Assertions.assertThat(employe.getPerformance()).isEqualTo(1); 	
+           } catch (EmployeException e) {
+           }
     }
     //Le matricule ne peut être null !
     @Test
@@ -228,15 +112,12 @@ public class EmployeServiceTest {
     	Long caTraite = 900l;
     	Long objectifCa = 900l;
     	
-        try {
-        	
-        	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
-        	when(employeRepository.avgPerformanceWhereMatriculeStartsWith("C")).thenReturn(1.0);
-        	
-        } catch (Exception e) {
-            Assertions.assertThat(e.getMessage());
-            Assertions.assertThat(e.getClass());
-        }
+    	 try {     	
+           	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
+           	Employe employe = employeRepository.findByMatricule(matricule);
+           	Assertions.assertThat(employe.getPerformance()).isEqualTo(1); 	
+           } catch (EmployeException e) {
+           }
     }
     
     //Le matricule doit commencer par un C !
@@ -247,18 +128,14 @@ public class EmployeServiceTest {
     	Long caTraite = 900l;
     	Long objectifCa = 900l;
     	
-        try {
-        	
-        	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
-        	when(employeRepository.avgPerformanceWhereMatriculeStartsWith("C")).thenReturn(1.0);
-        	
-        } catch (Exception e) {
-            Assertions.assertThat(e.getMessage());
-            Assertions.assertThat(e.getClass());
-        }
+    	 try {     	
+           	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
+           	Employe employe = employeRepository.findByMatricule(matricule);
+           	Assertions.assertThat(employe.getPerformance()).isEqualTo(1); 	
+           } catch (EmployeException e) {
+           }
     }
     
-    //null !matricule.startsWith("C")
     
     //1 : Si le chiffre d'affaire est inférieur de plus de 20% à l'objectif fixé, le commercial retombe à la performance de base
     @Test
@@ -268,17 +145,13 @@ public class EmployeServiceTest {
     	Long caTraite = 700l;
     	Long objectifCa = 1000l;
     	
-        Employe employe = new Employe("Doe","John","C12345",LocalDate.now(),1000D,1,1.0);
-        Mockito.when(employeRepository.findByMatricule(matricule)).thenReturn(employe);
-        Mockito.when(employeRepository.avgPerformanceWhereMatriculeStartsWith("C")).thenReturn(1.0);
-        
-        //When
-        employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
-        //Then
-        ArgumentCaptor<Employe> employeCaptor = ArgumentCaptor.forClass(Employe.class);
-        Mockito.verify(employeRepository, Mockito.times(1)).save(employeCaptor.capture());
-        Assertions.assertThat(employeCaptor.getValue().getPerformance()).isEqualTo(Entreprise.PERFORMANCE_BASE);
-    }
+    	 try {     	
+           	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
+           	Employe employe = employeRepository.findByMatricule(matricule);
+           	Assertions.assertThat(employe.getPerformance()).isEqualTo(1); 	
+           } catch (EmployeException e) {
+           }
+    	 }
       
     
     //2 : Si le chiffre d'affaire est inférieur entre 20% et 5% par rapport à l'ojectif fixé, il perd 2 de performance (dans la limite de la performance de base)
@@ -290,15 +163,12 @@ public class EmployeServiceTest {
     	Long caTraite = 850l;
     	Long objectifCa = 1000l;
     	
-        try {
-        	
-        	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
-        	when(employeRepository.avgPerformanceWhereMatriculeStartsWith("C")).thenReturn(1.0);
-        	
-        } catch (Exception e) {
-            Assertions.assertThat(e.getMessage());
-            Assertions.assertThat(e.getClass());
-        }
+    	  try {     	
+          	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
+          	Employe employe = employeRepository.findByMatricule(matricule);
+          	Assertions.assertThat(employe.getPerformance()).isEqualTo(1); 	
+          } catch (EmployeException e) {
+          }
     }
     
     //3 : Si le chiffre d'affaire est entre -5% et +5% de l'objectif fixé, la performance reste la même.
@@ -309,15 +179,12 @@ public class EmployeServiceTest {
     	Long caTraite = 100l;
     	Long objectifCa = 100l;
     	
-        try {
-        	
-        	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
-        	when(employeRepository.avgPerformanceWhereMatriculeStartsWith("C")).thenReturn(1.0);
-        	
-        } catch (Exception e) {
-            Assertions.assertThat(e.getMessage());
-            Assertions.assertThat(e.getClass());
-        }
+    	 try {     	
+           	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
+           	Employe employe = employeRepository.findByMatricule(matricule);
+           	Assertions.assertThat(employe.getPerformance()).isEqualTo(1); 	
+           } catch (EmployeException e) {
+           }
     }
     //4 : Si le chiffre d'affaire est supérieur entre 5 et 20%, il gagne 1 de performance
     @Test
@@ -327,15 +194,12 @@ public class EmployeServiceTest {
     	Long caTraite = 140l;
     	Long objectifCa = 100l;
     	
-        try {
-        	
-        	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
-        	when(employeRepository.avgPerformanceWhereMatriculeStartsWith("C")).thenReturn(1.0);
-        	
-        } catch (Exception e) {
-            Assertions.assertThat(e.getMessage());
-            Assertions.assertThat(e.getClass());
-        }
+    	 try {     	
+           	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
+           	Employe employe = employeRepository.findByMatricule(matricule);
+           	Assertions.assertThat(employe.getPerformance()).isEqualTo(1); 	
+           } catch (EmployeException e) {
+           }
     }
     //5 : Si le chiffre d'affaire est supérieur de plus de 20%, il gagne 4 de performance
     @Test
@@ -345,15 +209,14 @@ public class EmployeServiceTest {
     	Long caTraite = 1500l;
     	Long objectifCa = 1000l;   	
     	
-        try {
-        	
-        	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
-        	when(employeRepository.avgPerformanceWhereMatriculeStartsWith("C")).thenReturn(1.0);
-        	
-        } catch (Exception e) {
-            Assertions.assertThat(e.getMessage());
-            Assertions.assertThat(e.getClass());
-        }
+    	 try {     	
+           	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
+           	Employe employe = employeRepository.findByMatricule(matricule);
+           	Assertions.assertThat(employe.getPerformance()).isEqualTo(1); 	
+           } catch (EmployeException e) {
+           }
+        
+        //metre 3 ou 6
     }
     
 }
