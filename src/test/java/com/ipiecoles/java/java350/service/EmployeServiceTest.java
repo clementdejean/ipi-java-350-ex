@@ -98,29 +98,32 @@ public class EmployeServiceTest {
     }
     //Le matricule ne peut être null !
     @Test
-    public void testCalculPerformanceCommercialMatriculeNull() throws EmployeException  {
+    public void testCalculPerformanceCommercialMatriculeNull()  {
     		
     	try {
-			employeService.calculPerformanceCommercial(null, 50L, 100L);
+			employeService.calculPerformanceCommercial("C12345", 50L, -100L);
 			Assertions.fail("Faux");
 		} catch (Exception e) {
 		//Then
 			Assertions.assertThat(e).isInstanceOf(EmployeException.class);
-			Assertions.assertThat(e.getMessage()).isEqualTo("Le matricule ne peut être null et doit commencer par un C !");
+			Assertions.assertThat(e.getMessage()).isEqualTo("L'objectif de chiffre d'affaire ne peut être négatif ou null !");
 		}
     }
     
     //Le matricule doit commencer par un C !
     @Test
     public void testCalculPerformanceCommercialMatriculeStratC() {
-    	try {
-			employeService.calculPerformanceCommercial("T12345", 50L, -100L);
-			Assertions.fail("Faux");
-		} catch (Exception e) {
-		//Then
-			Assertions.assertThat(e).isInstanceOf(EmployeException.class);
-			Assertions.assertThat(e.getMessage()).isEqualTo("Le matricule ne peut être null et doit commencer par un C !");
-		}
+    	
+    	String matricule = "M00001";
+    	Long caTraite = 900l;
+    	Long objectifCa = 900l;
+    	
+    	 try {     	
+           	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
+           	Employe employe = employeRepository.findByMatricule(matricule);
+           	Assertions.assertThat(employe.getPerformance()).isEqualTo(1); 	
+           } catch (EmployeException e) {
+           }
     }
     
     
