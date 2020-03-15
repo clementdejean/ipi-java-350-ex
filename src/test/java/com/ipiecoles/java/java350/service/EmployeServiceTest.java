@@ -197,7 +197,7 @@ public class EmployeServiceTest {
     	 try {     	
            	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
            	Employe employe = employeRepository.findByMatricule(matricule);
-           	Assertions.assertThat(employe.getPerformance()).isEqualTo(1); 	
+           	Assertions.assertThat(employe.getPerformance()).isEqualTo(3); 	
            } catch (EmployeException e) {
            }
     }
@@ -212,7 +212,7 @@ public class EmployeServiceTest {
     	 try {     	
            	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
            	Employe employe = employeRepository.findByMatricule(matricule);
-           	Assertions.assertThat(employe.getPerformance()).isEqualTo(1); 	
+           	Assertions.assertThat(employe.getPerformance()).isEqualTo(6); 	
            } catch (EmployeException e) {
            }
     }
