@@ -142,8 +142,8 @@ public class EmployeServiceTest {
     public void testCalculPerformanceCommercialInférieur20pourc() throws EmployeException{
         //Given
     	String matricule = "C12345";
-    	Long caTraite = 700l;
-    	Long objectifCa = 1000l;
+    	Long caTraite = 70l;
+    	Long objectifCa = 100l;
     	
     	 try {     	
            	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
@@ -160,8 +160,8 @@ public class EmployeServiceTest {
     public void testCalculPerformanceCommercialBetween20and5() {
     	
     	String matricule = "C12345";
-    	Long caTraite = 850l;
-    	Long objectifCa = 1000l;
+    	Long caTraite = 85l;
+    	Long objectifCa = 100l;
     	
     	  try {     	
           	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
@@ -191,7 +191,7 @@ public class EmployeServiceTest {
     public void testCalculPerformanceCommercialBetween5and20Perf() {
     	
     	String matricule = "C12345";
-    	Long caTraite = 140l;
+    	Long caTraite = 110l;
     	Long objectifCa = 100l;
     	
     	 try {     	
@@ -206,8 +206,8 @@ public class EmployeServiceTest {
     public void testCalculPerformanceCommercialBMore20() {
     	
     	String matricule = "C12345";
-    	Long caTraite = 1500l;
-    	Long objectifCa = 1000l;   	
+    	Long caTraite = 140l;
+    	Long objectifCa = 100l;   	
     	
     	 try {     	
            	employeService.calculPerformanceCommercial(matricule, caTraite, objectifCa);
