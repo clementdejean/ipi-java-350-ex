@@ -215,8 +215,6 @@ public class EmployeServiceTest {
            	Assertions.assertThat(employe.getPerformance()).isEqualTo(1); 	
            } catch (EmployeException e) {
            }
-        
-        //metre 3 ou 6
     }
     
 }
