@@ -84,5 +84,42 @@ public class EmployeTest {
         Assertions.assertThat(primeCalulee).isEqualTo(prime);
 
     }
+    
+    @Test
+    public void testPourcentageNegatif() {
+    	//Given
+        Employe employe =  new Employe();
+        employe.setSalaire(1000d);
 
+        //When
+        employe.augmenterSalaire(-2d);
+
+        //Then
+        Assertions.assertThat(employe.getSalaire()).isEqualTo(-1000d);
+    }
+    
+    @Test
+    public void testPourcentageIsNull() {
+    	//Given
+    	Employe employe =  new Employe();
+    	
+        //When
+    	employe.augmenterSalaire(0d);
+
+        //Then
+    	Assertions.assertThat(employe.getSalaire()).isEqualTo(1521.22);
+    }
+    
+    @Test
+    public void testSalaireIsNull() {
+    	//Given
+    	Employe employe =  new Employe();
+    	employe.setSalaire(0d);
+    	
+        //When
+    	employe.augmenterSalaire(0d);
+
+        //Then
+    	Assertions.assertThat(employe.getSalaire()).isEqualTo(0d);
+    }
 }
